@@ -29,8 +29,10 @@ export COLOR_NOT_BOLD='\e[21m'
 export TITLEPS2=`hostname`
 export TITLEPS3=`date '+%Y-%m-%d'`
 
-export PS1="\[\e]0;`echo -n $TITLEPS2"["$TITLEPS3"]";uptime`\a\]${COLOR_WHITE}[\\u@\\h.\\l]${COLOR_LIGHT_GREEN}[\\t] ${COLOR_PURPLE}\\# ${COLOR_LIGHT_BLUE}\\w ${COLOR_NC}\\$ "
-
+#export PS1="\[\e]0;`echo -n $TITLEPS2"["$TITLEPS3"]";uptime`\a\]${COLOR_WHITE}[\\u@\\h.\\l]${COLOR_LIGHT_GREEN}[\\t] ${COLOR_PURPLE}\\# ${COLOR_LIGHT_BLUE}\\w ${COLOR_NC}\\$ "
+#https://unix.stackexchange.com/questions/90772/first-characters-of-the-command-repeated-in-the-display-when-completing
+#enclose all collstrings with \[ .. \]
+export PS1="\[\e]0;`echo -n $TITLEPS2 "["$TITLEPS3"]" ;uptime`\a\]\[${COLOR_WHITE}\][\\u@\\h:\\w|\\l]\[${COLOR_SPECIAL}\][\\t]\[${COLOR_RED}\] \\# \[${COLOR_BROWN}\](\\d)\n\[${COLOR_BLUE}\]\\w \[${COLOR_NC}\]\\$ "
 PATH=$PATH:/sbin:/usr/sbin
 export PATH
 
