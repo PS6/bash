@@ -27,23 +27,17 @@ export COLOR_LIGHT_GRAY='\e[0;37m'
 export COLOR_BOLD='\e[1m'
 export COLOR_NOT_BOLD='\e[21m'
 export COLOR_TIME='\e[8;30;42m'
+# to get my last external IP ;)
 export TITLEPS1=`ssh user@shell.xs4all.nl last | head -1 | awk '{print $3}'`
 export TITLEPS2=`hostname`
 export TITLEPS3=`date '+%Y-%m-%d'`
 
-#export PS1="\[\e]0;`echo -n $TITLEPS2 "["$TITLEPS3"]" ;uptime`\a\]${COLOR_WHITE}[\\u@\\h.\\l]${COLOR_LIGHT_GREEN}[\\t] ${COLOR_PURPLE}\\# ${COLOR_LIGHT_BLUE}\\w ${COLOR_NC}\\$ "
-
-
 export COLOR_SPECIAL='\e[4;37;44m'
 
-#export PS1="\[\e]0;`echo -n $TITLEPS2 "["$TITLEPS3"]" ;uptime`\a\]${COLOR_WHITE}[\\u@\\h:\\w|\\l]${COLOR_SPECIAL}[\\t]${COLOR_RED} \\# ${COLOR_BROWN}(\\d)\n${COLOR_BLUE}\\w ${COLOR_NC}\\$ "
 export PS1="\[\e]0;`echo -n $TITLEPS1 : $TITLEPS2 "["$TITLEPS3"]" ;uptime`\a\]\[${COLOR_WHITE}\][\\u@\\h:\\w|\\l]\[${COLOR_SPECIAL}\][\\t]\[${COLOR_RED}\] \\# \[${COLOR_BROWN}\](\\d) >>>\n\[${COLOR_BLUE}\]\\w \[${COLOR_NC}\]\\$ "
 
 # http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/bash-prompt-escape-sequences.html
 # https://www.linux.com/learn/how-make-fancy-and-useful-bash-prompt-linux
-
-#export PS1="\[\e]0;`echo -n $TITLEPS2"["$TITLEPS3"]";uptime`\a\]${COLOR_BLUE}[\\u@\\h.\\l]${COLOR_GREEN}\e[8;30;42m[\\t]${COLOR_RED} \\# ${COLOR_WHITE}\\w ${COLOR_NC}\\$ "
-#export PS1="\[\e]0;\a\]${COLOR_BLUE}[\\u@\\h.\\l]${COLOR_TIME}[\\t]${COLOR_RED} \\# ${COLOR_WHITE}\\w ${COLOR_NC}>>>\n\\$ "
 
 PATH=$PATH:/sbin:/usr/sbin
 export PATH
