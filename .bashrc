@@ -43,6 +43,7 @@ PATH=$PATH:/sbin:/usr/sbin
 export PATH
 
 # EDITOR
+export EDITOR=vi
 set -o vi
 git config --global core.editor "vim"
 export GIT_EDITOR=vim
