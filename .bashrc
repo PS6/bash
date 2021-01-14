@@ -73,4 +73,6 @@ alias dir='ls -a -otr -l -s -F -T 0 --color=yes $*'
 alias j='jobs'
 alias res='resize'
 alias clear="echo -e '\e[2J\n\n'"
+alias please='sudo "$BASH" -c "$(history -p !!)"'
+
 
