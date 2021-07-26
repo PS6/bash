@@ -1,0 +1,1 @@
+echo "longpassword" | sudo -S uptime
