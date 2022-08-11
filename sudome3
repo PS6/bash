@@ -1,0 +1,6 @@
+#!/bin/bash
+MYKEY="semi_secret_key"
+DGST="-sha256"
+SECRETIS=`cat ~/.ssh/authorized_keys | grep "some_string_from _key" | openssl dgst $DGST -hmac $MYKEY -binary | openssl base64 -A | sed -e 's/[\/+=]//g'`
+read -s password
+echo -n $password | openssl dgst $DGST -hmac $SECRETIS -binary | openssl enc -base64 -A | sed -e 's/[\/+=]//g' | tail -c 31
