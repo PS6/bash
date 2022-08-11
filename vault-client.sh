@@ -2,6 +2,10 @@
 #
 # created by PS6 https://github.com/PS6/bash/vault-client.sh
 # 
+# example usage 
+# ansible-vault create --vault-id notthatsecret@vault-client.sh secrets.yml
+# ansible-vault view --vault-id notthatsecret@vault-client.sh secrets.yml
+#
 DGST="-sha256"
 KEY0=`echo $0 | openssl dgst $DGST -hmac $1 -binary | openssl base64 -A | sed -e 's/[\/+=]//g'`
 KEY1=`echo $2 | openssl dgst $DGST -hmac $KEY0 -binary | openssl base64 -A | sed -e 's/[\/+=]//g'`
