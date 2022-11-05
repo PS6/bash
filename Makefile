@@ -1,34 +1,49 @@
+# use TAB not 8 spaces
 SHELL=/bin/bash
-secrets = secrets.yml
 identifier = keys-for-cloud-compute
+vcs=vault-client
+sp=secrets.protected
+sy=secrets.yml
 #first = start
 #second = this
-pwfile=~/.ssh/remove-files-at-logout/pw22175
-av=cat $(pwfile) | ansible-vault
-ap=cat $(pwfile) | ansible-playbook
-vs=--vault-id $(identifier)@vault-client.sh
-vc=./vault-client.sh
+pwn:=$(shell pwd | sed -e 's/\//_/g')
+ds:=$(shell date +%y%m%d%H%M%S)
+pwfile=~/.ssh/remove-files-at-logout/pw$(pwn)
+av=cat lpw | ansible-vault
+ap=cat lpw | ansible-playbook
+vs=--vault-id $(identifier)@$(vcs)
+vc=./$(vcs)
 
-lpwd:
+$(sp):
+        $(av) create $(vs) $(sy)
+        chmod 400 $(sy)
+        reset
 
-init:
+$(sy):
+        [ -f $(sp) ] && cp $(sp) $(sy)
+        chmod 400 $(sy)
+
+edit: secrets.yml lpw
+        chmod 600 secrets.yml
+        $(av) $@ $(vs) secrets.yml
+        chmod 400 secrets.yml
+        cp $(sy) $(sp).$(ds)
+        reset
+
+$(vcs):
+        ln -s ../.ssh/$(vcs).sh $@
+
+$(pwfile): $(vcs)
         @echo "type the password and use make clean before logout"
-        $(vc) $(secrets) $(identifier) > $(pwfile)
-        chmod 400 $(pwfile)
+        $(vc) secrets.yml $(identifier) > $@
+        chmod 400 $@
 # $@ expands to label
-create:
-        $(av) $@ $(vs) $(secrets)
-        chmod 400 $(secrets)
-        reset
 
-edit:
-        chmod 600 $(secrets)
-        $(av) $@ $(vs) $(secrets)
-        chmod 400 $(secrets)
-        reset
+lpw: $(pwfile)
+        ln -s $(pwfile) $@
 
-view:
-        $(av) $@ $(vs) $(secrets)
+view: lpw $(sy)
+        $(av) $@ $(vs) secrets.yml
 
 plan:
         $(ap) -v --connection=local -i hosts-inventory.txt -l localhost $(vs) tf-$@.yml
@@ -41,14 +56,22 @@ play:
         $(ap) -i hosts-inventory.txt -l $(target) $(vs) $(book)
 
 # make random user=ubuntu seed=abc123
-random:
+random: $(pwfile)
         @cat $(pwfile) | $(vc) $(user) $(seed)
 
-echo: lpwd
-        cat $(pwfile)
+keygen:
+        make play book=echo-password.yml target=localhost
 
-hint: lpwd
-        echo "r...2"
+echo: lpw
+        cat lpw
 
-clean: lpwd
-        rm $(pwfile)
+hint: lpw
+        echo "S...0"
+
+clean:
+        [ -f $(pwfile) ] && rm $(pwfile) || true
+        [ -f $(vcs) ] && rm $(vcs) || true
+        [ -f $(sy) ] && rm $(sy) || true
+        cp $(shell ls -1 secrets.protected.* | tail -1) $(sp)
+        touch lpw
+        rm lpw
