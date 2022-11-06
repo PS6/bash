@@ -14,36 +14,56 @@ ap=cat lpw | ansible-playbook
 vs=--vault-id $(identifier)@$(vcs)
 vc=./$(vcs)
 
-$(sp):
+all: copy init
+        @echo $@
+
+$(sp): lpw
+        @echo $@
+        [ -f $(sp) ] && created=ready
+
+copy:
+        @echo $@
+        [ -f $(sp) ] && cp $(sp) $(sp).$(ds)
+        [ -f $(sp) ] && touch $(sp)
+
+create: lpw
+ifndef created
+        @echo $@
         $(av) create $(vs) $(sy)
-        chmod 400 $(sy)
-        reset
-
-$(sy):
-        [ -f $(sp) ] && cp $(sp) $(sy)
-        chmod 400 $(sy)
-
-edit: secrets.yml lpw
-        chmod 600 secrets.yml
-        $(av) $@ $(vs) secrets.yml
-        chmod 400 secrets.yml
         cp $(sy) $(sp).$(ds)
+endif
+
+$(sy): copy
+        @echo $@
+        [ -f $(sp) ] && cp $(sp) $(sy)
+
+edit: lpw $(sy)
+        @echo $@
+        $(av) $@ $(vs) $(sy)
+        cp $(sy) $(sp).$(ds)
+        cp $(sy) $(sp)
         reset
 
 $(vcs):
-        ln -s ../.ssh/$(vcs).sh $@
+        @echo $@
+        [ -f $(vcs) ] && rm $(vcs) || true
+        ln -s ~/.ssh/$(vcs).sh $@
 
-$(pwfile): $(vcs)
+init: $(vcs)
+        @echo $@
         @echo "type the password and use make clean before logout"
-        $(vc) secrets.yml $(identifier) > $@
-        chmod 400 $@
-# $@ expands to label
+        [ -f $(pwfile) ] && touch $(pwfile) || $(vc) $(sy) $(identifier) > $(pwfile)
+        chmod 400 $(pwfile)
 
-lpw: $(pwfile)
-        ln -s $(pwfile) $@
+lpw: init
+        @echo $@
+        touch lpw
+        rm lpw
+        [ -f $(pwfile) ] && ln -s $(pwfile) $@
 
-view: lpw $(sy)
-        $(av) $@ $(vs) secrets.yml
+view: $(sy) lpw
+        @echo $@
+        [ -f $(sy) ] && $(av) $@ $(vs) secrets.yml
 
 plan:
         $(ap) -v --connection=local -i hosts-inventory.txt -l localhost $(vs) tf-$@.yml
@@ -68,10 +88,12 @@ echo: lpw
 hint: lpw
         echo "S...0"
 
-clean:
-        [ -f $(pwfile) ] && rm $(pwfile) || true
+clean: copy
+        [ -f $(pwfile) ] && rm -f $(pwfile) || true
         [ -f $(vcs) ] && rm $(vcs) || true
         [ -f $(sy) ] && rm $(sy) || true
+        chmod 600 $(sp).*
         cp $(shell ls -1 secrets.protected.* | tail -1) $(sp)
+        [ -f $(sp) ] && rm $(sp).* || true
         touch lpw
         rm lpw
